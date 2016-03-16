@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="a8a30cbc-b1df-467f-baa1-4f463489eae1" ChangeDateTime="03/16/2016 17:12:16">
+    <Property Name="ElementName" Value="[dbo].[Dish].[ Description]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Dish]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Description" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1ff03f15-0cb4-422a-980a-9c11fee59d8f" ChangeDateTime="03/16/2016 17:18:40">
+    <Property Name="ElementName" Value="[dbo].[Dish].[DishPictureiD]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Dish]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="DishPictureId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="83d57433-b93d-42b2-93bb-a383612eed0c" ChangeDateTime="03/16/2016 17:19:23">
+    <Property Name="ElementName" Value="[dbo].[FK_Dish_ToTable]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Dish]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Dish_ToDishPicture]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="93914b2b-a323-4625-976f-30e1e2a3cd3f" ChangeDateTime="03/16/2016 17:25:53">
+    <Property Name="ElementName" Value="[dbo].[FK_Menu_To_Dish]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Menu]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Menu_Dish]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6b14c97f-7062-4bd4-87b4-823782febcc4" ChangeDateTime="03/16/2016 17:28:02">
+    <Property Name="ElementName" Value="[dbo].[Menu].[DishID]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Menu]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="DishId" />
+  </Operation>
+</Operations>
