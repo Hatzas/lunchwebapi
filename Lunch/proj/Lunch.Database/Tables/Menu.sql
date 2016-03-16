@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Menu]
 (
-	[Id] INT NOT NULL PRIMARY KEY, 
+	[Id] INT IDENTITY(1,1) NOT NULL PRIMARY KEY, 
 	[DishId] INT NULL, 
 	[DishCategoryId] INT NULL, 
 	[Date] DATETIME NULL, 
