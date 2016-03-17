@@ -1,13 +1,22 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lunch.WebApi", "proj\Lunch.WebApi\Lunch.WebApi.csproj", "{B479CD73-4A69-40BD-A0AE-3A1E793EF805}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{9E597C07-E5C6-4D1A-A3CD-ACE34010304C}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Lunch.Database", "proj\Lunch.Database\Lunch.Database.sqlproj", "{215B592E-86BF-4AFE-B496-99D0CB57A381}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataModel", "DataModel", "{F4ED9027-1624-4DE6-842F-894E9A892134}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lunch.WebApi.DataAccess", "proj\Lunch.WebApi.DataAccess\Lunch.WebApi.DataAccess.csproj", "{DCE5DC83-CD94-4454-BAC4-D00C3A464863}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6D259E46-78BF-4CF4-A678-8E2A7A94F090} = {6D259E46-78BF-4CF4-A678-8E2A7A94F090}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lunch.WebApi.Model", "proj\Lunch.WebApi.Model\Lunch.WebApi.Model.csproj", "{6D259E46-78BF-4CF4-A678-8E2A7A94F090}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,11 +34,21 @@ Global
 		{215B592E-86BF-4AFE-B496-99D0CB57A381}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{215B592E-86BF-4AFE-B496-99D0CB57A381}.Release|Any CPU.Build.0 = Release|Any CPU
 		{215B592E-86BF-4AFE-B496-99D0CB57A381}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{DCE5DC83-CD94-4454-BAC4-D00C3A464863}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCE5DC83-CD94-4454-BAC4-D00C3A464863}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCE5DC83-CD94-4454-BAC4-D00C3A464863}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCE5DC83-CD94-4454-BAC4-D00C3A464863}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D259E46-78BF-4CF4-A678-8E2A7A94F090}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D259E46-78BF-4CF4-A678-8E2A7A94F090}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D259E46-78BF-4CF4-A678-8E2A7A94F090}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D259E46-78BF-4CF4-A678-8E2A7A94F090}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{215B592E-86BF-4AFE-B496-99D0CB57A381} = {9E597C07-E5C6-4D1A-A3CD-ACE34010304C}
+		{DCE5DC83-CD94-4454-BAC4-D00C3A464863} = {F4ED9027-1624-4DE6-842F-894E9A892134}
+		{6D259E46-78BF-4CF4-A678-8E2A7A94F090} = {F4ED9027-1624-4DE6-842F-894E9A892134}
 	EndGlobalSection
 EndGlobal
