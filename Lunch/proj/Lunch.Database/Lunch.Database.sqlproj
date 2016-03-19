@@ -72,4 +72,7 @@
   <ItemGroup>
     <RefactorLog Include="Lunch.Database.refactorlog" />
   </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Insert.PostDeployment.sql" />
+  </ItemGroup>
 </Project>
