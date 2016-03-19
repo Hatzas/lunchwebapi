@@ -9,12 +9,12 @@ namespace Lunch.DataAccessLayer.Repositories
 {
     public class LunchUnitOfWork : IDisposable
     {
-        #region private
+        #region Private
         private readonly Entities _dbContext;
-
         private MenuRepository _menuRepository;
-       
+        private bool disposed = false;       
         #endregion
+
         #region Repositoies
         public MenuRepository MenuRepository
         {
@@ -70,9 +70,23 @@ namespace Lunch.DataAccessLayer.Repositories
         {
             get { return _dbContext; }
         }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    _dbContext.Dispose();
+                }
+            }
+            this.disposed = true;
+        }
+
         public void Dispose()
         {
-            _dbContext.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

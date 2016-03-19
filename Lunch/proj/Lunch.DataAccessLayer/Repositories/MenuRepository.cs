@@ -12,14 +12,12 @@ namespace Lunch.DataAccessLayer.Repositories
     public class MenuRepository: RepositoryBase<Menu>
     {
         #region Constructor
-        //public MenuRepository()
-        //{
-        //}
-        public MenuRepository(Entities context)
+        internal MenuRepository(Entities context)
             : base(context)
         {
         }
         #endregion
+
         #region Public methods
         public void Upsert(Menu entity)
         {
@@ -33,27 +31,6 @@ namespace Lunch.DataAccessLayer.Repositories
             }
         }
 
-        public void Insert(Menu entity)
-        {
-            this.InsertEntity(entity);
-        }
-
-        public void Update(Menu entity)
-        {
-            this.UpdateEntity(entity);
-        }
-
-        public Menu GetMenuById(int menuId)
-        {
-            return DbContext.Set<Menu>().FirstOrDefault(m => m.Id == menuId);
-        }
-
-        //public Menu GetMenuWithDishAndDishCategoryById(int id)
-        //{
-        //    return DbContext.Set<Menu>().Include(m => m.Dish);
-        //}
-
-
         public List<Menu> GetMenusByDate(DateTime date)
         {
             return DbContext.Set<Menu>().Where(m => m.Date == date).ToList();
@@ -65,8 +42,7 @@ namespace Lunch.DataAccessLayer.Repositories
 
         public void DeleteMenuById(Menu menu)
         {
-            DbContext.Set<Menu>().Remove(menu);
-            
+            DbContext.Set<Menu>().Remove(menu);            
         }
 
         public List<MenuDetails> GetMenusDetailsByStartDateAndEndDate(DateTime starDate, DateTime endDate)
@@ -98,9 +74,7 @@ namespace Lunch.DataAccessLayer.Repositories
                          });
 
             return query.ToList();
-        }
-
-     
+        }     
         #endregion
 
         #region Private methods

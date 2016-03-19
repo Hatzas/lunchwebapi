@@ -11,16 +11,11 @@ namespace Lunch.DataAccessLayer.Repositories
     public class RepositoryBase<T> where T : class
     {
         #region Protected Properties
-
         internal Entities DbContext;
         #endregion
 
         #region Constructor
-        //public RepositoryBase()
-        //{
-        //    this.DbContext = new Entities();
-        //}
-        public RepositoryBase(Entities context)
+        internal RepositoryBase(Entities context)
         {
             this.DbContext = context;
         }
@@ -30,16 +25,6 @@ namespace Lunch.DataAccessLayer.Repositories
         public T Find(int id)
         {
             return this.DbContext.Set<T>().Find(id);
-        }
-
-        protected void InsertEntity(T entity)
-        {
-            this.DbContext.Set<T>().Add(entity);
-        }
-
-        protected void UpdateEntity(T entity)
-        {
-            this.DbContext.Entry(entity).State = EntityState.Modified;
         }
 
         public void Delete(int id)
@@ -61,10 +46,14 @@ namespace Lunch.DataAccessLayer.Repositories
         #endregion
 
         #region Protected methods
-
-        protected IList<T> GetResult(IQueryable<T> query)
+        protected void InsertEntity(T entity)
         {
-            return query.ToList();
+            this.DbContext.Set<T>().Add(entity);
+        }
+
+        protected void UpdateEntity(T entity)
+        {
+            this.DbContext.Entry(entity).State = EntityState.Modified;
         }
         #endregion
     }
