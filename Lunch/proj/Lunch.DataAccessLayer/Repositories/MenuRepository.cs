@@ -9,7 +9,7 @@ using Lunch.Model.Extended;
 
 namespace Lunch.DataAccessLayer.Repositories
 {
-    public class MenuRepository: RepositoryBase<Menu>
+    public class MenuRepository : RepositoryBase<Menu>
     {
         #region Constructor
         internal MenuRepository(Entities context)
@@ -35,20 +35,20 @@ namespace Lunch.DataAccessLayer.Repositories
         {
             return DbContext.Set<Menu>().Where(m => m.Date == date).ToList();
         }
-        public List<Menu> GetMenusByStartDateEndDate(DateTime starDate, DateTime endDate)
+        public List<Menu> GetMenusByStartDateEndDate(DateTime startDate, DateTime endDate)
         {
-            return DbContext.Set<Menu>().Where(m => m.Date >= starDate && m.Date >= endDate).ToList();
+            return DbContext.Set<Menu>().Where(m => m.Date >= startDate && m.Date >= endDate).ToList();
         }
 
         public void DeleteMenuById(Menu menu)
         {
-            DbContext.Set<Menu>().Remove(menu);            
+            DbContext.Set<Menu>().Remove(menu);
         }
 
-        public List<MenuDetails> GetMenusDetailsByStartDateAndEndDate(DateTime starDate, DateTime endDate)
+        public List<MenuDetails> GetMenusDetailsByStartDateAndEndDate(DateTime startDate, DateTime endDate)
         {
             var query = (from menu in this.DbContext.Menus
-                         where menu.Date>=starDate && menu.Date<= endDate
+                         where menu.Date >= startDate && menu.Date <= endDate
                          select new MenuDetails
                          {
                              Id = menu.Id,
@@ -62,8 +62,8 @@ namespace Lunch.DataAccessLayer.Repositories
                                  Type = menu.Dish.Type,
                                  DishPicture = new DishPictureDetails()
                                  {
-                                     Id= menu.Dish.DishPicture.Id,
-                                     Thumbnail= menu.Dish.DishPicture.Thumbnail,
+                                     Id = menu.Dish.DishPicture.Id,
+                                     Thumbnail = menu.Dish.DishPicture.Thumbnail,
                                  }
                              },
                              DishCategory = new DishCategoryDetails()
@@ -74,11 +74,10 @@ namespace Lunch.DataAccessLayer.Repositories
                          });
 
             return query.ToList();
-        }     
+        }
         #endregion
 
         #region Private methods
-      
         #endregion
     }
 }

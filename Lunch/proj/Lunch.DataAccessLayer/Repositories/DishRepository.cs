@@ -30,6 +30,11 @@ namespace Lunch.DataAccessLayer.Repositories
                 this.UpdateEntity(entity);
             }
         }
+
+        public List<Dish> GetAllDishes()
+        {
+            return this.DbContext.Set<Dish>().ToList();
+        }
         #endregion
     }
 }

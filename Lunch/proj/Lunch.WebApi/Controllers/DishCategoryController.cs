@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Lunch.DataAccessLayer.Repositories;
+using Lunch.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -10,30 +12,56 @@ namespace Lunch.WebApi.Controllers
     public class DishCategoryController : ApiController
     {
         // GET: api/DishCategory
-        public IEnumerable<string> Get()
+        public IEnumerable<object> Get()
         {
-            return new string[] { "value1", "value2" };
+            var loggingUnitOfWork = new LunchUnitOfWork();
+            var dishCategories = loggingUnitOfWork.DishCategoryRepository.GetAllDishCategories();
+
+            return dishCategories.Select(dc => new { Id = dc.Id, Name = dc.Name });
         }
 
         // GET: api/DishCategory/5
-        public string Get(int id)
+        public object Get(int id)
         {
-            return "value";
+            var loggingUnitOfWork = new LunchUnitOfWork();
+            var dishCategory = loggingUnitOfWork.DishCategoryRepository.Find(id);
+
+            return new { Id = dishCategory.Id, Name = dishCategory.Name };
         }
 
         // POST: api/DishCategory
-        public void Post([FromBody]string value)
+        public void Post([FromBody]string name)
         {
+            var dishCategory = new DishCategory
+            {
+                Name = name,
+            };
+
+            var loggingUnitOfWork = new LunchUnitOfWork();
+            loggingUnitOfWork.DishCategoryRepository.Upsert(dishCategory);
+            loggingUnitOfWork.Save();
         }
 
         // PUT: api/DishCategory/5
-        public void Put(int id, [FromBody]string value)
+        public void Put(int id, [FromBody]string name)
         {
+            var loggingUnitOfWork = new LunchUnitOfWork();
+            var dishCategory = loggingUnitOfWork.DishCategoryRepository.Find(id);
+
+            dishCategory.Name = name;
+
+            loggingUnitOfWork.DishCategoryRepository.Upsert(dishCategory);
+            loggingUnitOfWork.Save();
         }
 
         // DELETE: api/DishCategory/5
         public void Delete(int id)
         {
+            var loggingUnitOfWork = new LunchUnitOfWork();
+            var dishCategory = loggingUnitOfWork.DishCategoryRepository.Find(id);
+
+            loggingUnitOfWork.DishCategoryRepository.DeleteEntity(dishCategory);
+            loggingUnitOfWork.Save();
         }
     }
 }

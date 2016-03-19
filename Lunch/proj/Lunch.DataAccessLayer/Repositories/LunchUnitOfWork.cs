@@ -10,12 +10,41 @@ namespace Lunch.DataAccessLayer.Repositories
     public class LunchUnitOfWork : IDisposable
     {
         #region Private
-        private readonly Entities _dbContext;
+        private readonly Entities _dbContext;        
+        private bool disposed = false;
+
+
+        private DishCategoryRepository _dishCategoryRepository;
+        private DishRepository _dishRepository;
         private MenuRepository _menuRepository;
-        private bool disposed = false;       
+        private UserMenuRepository _userMenuRepository;
         #endregion
 
-        #region Repositoies
+        #region Repositoies        
+        public DishCategoryRepository DishCategoryRepository
+        {
+            get
+            {
+                if (this._dishCategoryRepository == null)
+                {
+                    this._dishCategoryRepository = new DishCategoryRepository(_dbContext);
+                }
+                return _dishCategoryRepository;
+            }
+        }
+
+        public DishRepository DishRepository
+        {
+            get
+            {
+                if (this._dishRepository == null)
+                {
+                    this._dishRepository = new DishRepository(_dbContext);
+                }
+                return _dishRepository;
+            }
+        }
+
         public MenuRepository MenuRepository
         {
             get
@@ -28,6 +57,17 @@ namespace Lunch.DataAccessLayer.Repositories
             }
         }
 
+        public UserMenuRepository UserMenuRepository
+        {
+            get
+            {
+                if (this._userMenuRepository == null)
+                {
+                    this._userMenuRepository = new UserMenuRepository(_dbContext);
+                }
+                return _userMenuRepository;
+            }
+        }
         #endregion
 
         public bool AutoDetectChangesEnabled
@@ -59,18 +99,25 @@ namespace Lunch.DataAccessLayer.Repositories
         public LunchUnitOfWork()
         {
             _dbContext = new Entities();
-        }
+        }        
+
+        
 
         public int Save()
         {
             return _dbContext.SaveChanges();
         }
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
 
         internal Entities DbContext
         {
             get { return _dbContext; }
         }
-
         protected virtual void Dispose(bool disposing)
         {
             if (!this.disposed)
@@ -81,12 +128,6 @@ namespace Lunch.DataAccessLayer.Repositories
                 }
             }
             this.disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }
