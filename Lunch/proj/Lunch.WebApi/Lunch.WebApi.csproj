@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <Content Include="log4net.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -112,6 +113,10 @@
     <ProjectReference Include="..\Lunch.DataAccessLayer\Lunch.DataAccessLayer.csproj">
       <Project>{da3e6d0d-3d4f-4401-9c7d-b4945e79e083}</Project>
       <Name>Lunch.DataAccessLayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Lunch.Logging\Lunch.Logging.csproj">
+      <Project>{984b9a2b-b00a-4280-bb4c-8d225e061073}</Project>
+      <Name>Lunch.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\Lunch.Model\Lunch.Model.csproj">
       <Project>{e97e9442-b5e3-42d3-a83c-4cf929c86a8a}</Project>

@@ -1,4 +1,5 @@
 ﻿using Lunch.DataAccessLayer.Repositories;
+using Lunch.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,33 +12,51 @@ namespace Lunch.WebApi.Controllers
     public class DishController : ApiController
     {
         // GET: api/Dish
-        public IEnumerable<object> Get()
+        public HttpResponseMessage Get()
         {
-            var loggingUnitOfWork = new LunchUnitOfWork();
-            var dishes = loggingUnitOfWork.DishRepository.GetAllDishes();
-
-            return dishes.Select(d => new
+            try
             {
-                Id = d.Id,
-                Name = d.Name,
-                Type = d.Type,
-                Thumbnail = d.DishPicture != null ? d.DishPicture.Thumbnail : null
-            });
+                var loggingUnitOfWork = new LunchUnitOfWork();
+                var dishes = loggingUnitOfWork.DishRepository.GetAllDishes();
+
+                return Request.CreateResponse(dishes.Select(d => new
+                {
+                    Id = d.Id,
+                    Name = d.Name,
+                    Type = d.Type,
+                    Thumbnail = d.DishPicture != null ? d.DishPicture.Thumbnail : null
+                }));
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/dish Get: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
         // GET: api/Dish/5
-        public object Get(int id)
+        public HttpResponseMessage Get(int id)
         {
-            var loggingUnitOfWork = new LunchUnitOfWork();
-            var dish = loggingUnitOfWork.DishRepository.Find(id);
-
-            return new
+            try
             {
-                Id = dish.Id,
-                Name = dish.Name,
-                Type = dish.Type,
-                Thumbnail = dish.DishPicture != null ? dish.DishPicture.Thumbnail : null
-            };
+                var loggingUnitOfWork = new LunchUnitOfWork();
+                var dish = loggingUnitOfWork.DishRepository.Find(id);
+
+                return Request.CreateResponse(new
+                {
+                    Id = dish.Id,
+                    Name = dish.Name,
+                    Type = dish.Type,
+                    Thumbnail = dish.DishPicture != null ? dish.DishPicture.Thumbnail : null
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/dish/{id} Get: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
         // POST: api/Dish

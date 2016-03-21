@@ -1,4 +1,5 @@
 ﻿using Lunch.DataAccessLayer.Repositories;
+using Lunch.Logging;
 using Lunch.Model;
 using System;
 using System.Collections.Generic;
@@ -12,56 +13,107 @@ namespace Lunch.WebApi.Controllers
     public class DishCategoryController : ApiController
     {
         // GET: api/DishCategory
-        public IEnumerable<object> Get()
+        public HttpResponseMessage Get()
         {
-            var loggingUnitOfWork = new LunchUnitOfWork();
-            var dishCategories = loggingUnitOfWork.DishCategoryRepository.GetAllDishCategories();
+            try
+            {
+                var loggingUnitOfWork = new LunchUnitOfWork();
+                var dishCategories = loggingUnitOfWork.DishCategoryRepository.GetAllDishCategories();
 
-            return dishCategories.Select(dc => new { Id = dc.Id, Name = dc.Name });
+                return Request.CreateResponse(dishCategories.Select(dc => new { Id = dc.Id, Name = dc.Name }));
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/dishcategory Get: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
         // GET: api/DishCategory/5
-        public object Get(int id)
+        public HttpResponseMessage Get(int id)
         {
-            var loggingUnitOfWork = new LunchUnitOfWork();
-            var dishCategory = loggingUnitOfWork.DishCategoryRepository.Find(id);
+            try
+            {
+                var loggingUnitOfWork = new LunchUnitOfWork();
+                var dishCategory = loggingUnitOfWork.DishCategoryRepository.Find(id);
 
-            return new { Id = dishCategory.Id, Name = dishCategory.Name };
+                return Request.CreateResponse(new { Id = dishCategory.Id, Name = dishCategory.Name });
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/dishcategory/{id} Get: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
         // POST: api/DishCategory
-        public void Post([FromBody]string name)
+        public HttpResponseMessage Post([FromBody]string name)
         {
-            var dishCategory = new DishCategory
+            try
             {
-                Name = name,
-            };
+                var dishCategory = new DishCategory
+                {
+                    Name = name,
+                };
 
-            var loggingUnitOfWork = new LunchUnitOfWork();
-            loggingUnitOfWork.DishCategoryRepository.Upsert(dishCategory);
-            loggingUnitOfWork.Save();
+                var loggingUnitOfWork = new LunchUnitOfWork();
+                loggingUnitOfWork.DishCategoryRepository.Upsert(dishCategory);
+                loggingUnitOfWork.Save();
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/dishcategory Post: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
         // PUT: api/DishCategory/5
-        public void Put(int id, [FromBody]string name)
+        public HttpResponseMessage Put(int id, [FromBody]string name)
         {
-            var loggingUnitOfWork = new LunchUnitOfWork();
-            var dishCategory = loggingUnitOfWork.DishCategoryRepository.Find(id);
+            try
+            {
+                var loggingUnitOfWork = new LunchUnitOfWork();
+                var dishCategory = loggingUnitOfWork.DishCategoryRepository.Find(id);
 
-            dishCategory.Name = name;
+                dishCategory.Name = name;
 
-            loggingUnitOfWork.DishCategoryRepository.Upsert(dishCategory);
-            loggingUnitOfWork.Save();
+                loggingUnitOfWork.DishCategoryRepository.Upsert(dishCategory);
+                loggingUnitOfWork.Save();
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/dishcategory/{id} Put: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
         // DELETE: api/DishCategory/5
-        public void Delete(int id)
+        public HttpResponseMessage Delete(int id)
         {
-            var loggingUnitOfWork = new LunchUnitOfWork();
-            var dishCategory = loggingUnitOfWork.DishCategoryRepository.Find(id);
+            try
+            {
+                var loggingUnitOfWork = new LunchUnitOfWork();
+                var dishCategory = loggingUnitOfWork.DishCategoryRepository.Find(id);
 
-            loggingUnitOfWork.DishCategoryRepository.DeleteEntity(dishCategory);
-            loggingUnitOfWork.Save();
+                loggingUnitOfWork.DishCategoryRepository.DeleteEntity(dishCategory);
+                loggingUnitOfWork.Save();
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/dishcategory/{id} Delete: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
     }
 }

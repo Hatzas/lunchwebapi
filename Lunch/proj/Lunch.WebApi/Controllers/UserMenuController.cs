@@ -1,4 +1,5 @@
 ﻿using Lunch.DataAccessLayer.Repositories;
+using Lunch.Logging;
 using Lunch.Model.Extended;
 using System;
 using System.Collections.Generic;
@@ -12,12 +13,21 @@ namespace Lunch.WebApi.Controllers
     public class UserMenuController : ApiController
     {
         // GET: api/UserMenu
-        public IEnumerable<MenuDetails> Get(DateTime startDate, DateTime endDate)
+        public HttpResponseMessage Get(DateTime startDate, DateTime endDate)
         {
-            var loggingUnitOfWork = new LunchUnitOfWork();
-            var userMenus = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate);
+            try
+            {
+                var loggingUnitOfWork = new LunchUnitOfWork();
+                var userMenus = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate);
 
-            return userMenus;
+                return Request.CreateResponse(userMenus);
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/usermenu Get: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
         // GET: api/UserMenu/5

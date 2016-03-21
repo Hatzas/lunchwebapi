@@ -6,22 +6,35 @@ using System.Net.Http;
 using System.Web.Http;
 using Lunch.DataAccessLayer.Repositories;
 using Lunch.Model.Extended;
+using System.Threading.Tasks;
+using Lunch.Logging;
 
 namespace Lunch.WebApi.Controllers
 {
     public class MenuController : ApiController
     {
-        // GET api/menu
+        //GET api/menu
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };
         }
 
-        public IEnumerable<MenuDetails> Get(DateTime startDate, DateTime endDate)
+
+        public HttpResponseMessage Get(DateTime startDate, DateTime endDate)
         {
-           var loggingUnitOfWork = new LunchUnitOfWork();
-           var menuList = loggingUnitOfWork.MenuRepository.GetMenusDetailsByStartDateAndEndDate(startDate, endDate);
-           return menuList;
+            try
+            {
+                var loggingUnitOfWork = new LunchUnitOfWork();
+                var menuList = loggingUnitOfWork.MenuRepository.GetMenusDetailsByStartDateAndEndDate(startDate, endDate);
+
+                return Request.CreateResponse(menuList);
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/menu Get: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
         // GET api/menu/5
