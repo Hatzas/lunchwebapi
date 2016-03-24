@@ -11,7 +11,7 @@ namespace Lunch.Logging
     public class Logger
     {
         private ILog _log = null;
-        public Logger(ILog log)
+        internal Logger(ILog log)
         {
             _log = log;
         }
