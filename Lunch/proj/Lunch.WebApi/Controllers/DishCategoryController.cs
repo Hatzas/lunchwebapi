@@ -12,13 +12,13 @@ namespace Lunch.WebApi.Controllers
 {
     public class DishCategoryController : ApiController
     {
-        // GET: api/DishCategory
+        // GET: api/dishcategory
         public HttpResponseMessage Get()
         {
             try
             {
-                var loggingUnitOfWork = new LunchUnitOfWork();
-                var dishCategories = loggingUnitOfWork.DishCategoryRepository.GetAllDishCategories();
+                var lunchUnitOfWork = new LunchUnitOfWork();
+                var dishCategories = lunchUnitOfWork.DishCategoryRepository.GetAllDishCategories();
 
                 return Request.CreateResponse(dishCategories.Select(dc => new { Id = dc.Id, Name = dc.Name }));
             }
@@ -30,13 +30,13 @@ namespace Lunch.WebApi.Controllers
             return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
-        // GET: api/DishCategory/5
+        // GET: api/dishcategory/{id}
         public HttpResponseMessage Get(int id)
         {
             try
             {
-                var loggingUnitOfWork = new LunchUnitOfWork();
-                var dishCategory = loggingUnitOfWork.DishCategoryRepository.Find(id);
+                var lunchUnitOfWork = new LunchUnitOfWork();
+                var dishCategory = lunchUnitOfWork.DishCategoryRepository.Find(id);
 
                 return Request.CreateResponse(new { Id = dishCategory.Id, Name = dishCategory.Name });
             }
@@ -48,7 +48,7 @@ namespace Lunch.WebApi.Controllers
             return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
-        // POST: api/DishCategory
+        // POST: api/dishcategory
         public HttpResponseMessage Post([FromBody]string name)
         {
             try
@@ -58,9 +58,9 @@ namespace Lunch.WebApi.Controllers
                     Name = name,
                 };
 
-                var loggingUnitOfWork = new LunchUnitOfWork();
-                loggingUnitOfWork.DishCategoryRepository.Upsert(dishCategory);
-                loggingUnitOfWork.Save();
+                var lunchUnitOfWork = new LunchUnitOfWork();
+                lunchUnitOfWork.DishCategoryRepository.Upsert(dishCategory);
+                lunchUnitOfWork.Save();
 
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
@@ -72,18 +72,18 @@ namespace Lunch.WebApi.Controllers
             return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
-        // PUT: api/DishCategory/5
+        // PUT: api/dishcategory/{id}
         public HttpResponseMessage Put(int id, [FromBody]string name)
         {
             try
             {
-                var loggingUnitOfWork = new LunchUnitOfWork();
-                var dishCategory = loggingUnitOfWork.DishCategoryRepository.Find(id);
+                var lunchUnitOfWork = new LunchUnitOfWork();
+                var dishCategory = lunchUnitOfWork.DishCategoryRepository.Find(id);
 
                 dishCategory.Name = name;
 
-                loggingUnitOfWork.DishCategoryRepository.Upsert(dishCategory);
-                loggingUnitOfWork.Save();
+                lunchUnitOfWork.DishCategoryRepository.Upsert(dishCategory);
+                lunchUnitOfWork.Save();
 
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
@@ -95,16 +95,16 @@ namespace Lunch.WebApi.Controllers
             return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
-        // DELETE: api/DishCategory/5
+        // DELETE: api/dishcategory/{id}
         public HttpResponseMessage Delete(int id)
         {
             try
             {
-                var loggingUnitOfWork = new LunchUnitOfWork();
-                var dishCategory = loggingUnitOfWork.DishCategoryRepository.Find(id);
+                var lunchUnitOfWork = new LunchUnitOfWork();
+                var dishCategory = lunchUnitOfWork.DishCategoryRepository.Find(id);
 
-                loggingUnitOfWork.DishCategoryRepository.DeleteEntity(dishCategory);
-                loggingUnitOfWork.Save();
+                lunchUnitOfWork.DishCategoryRepository.DeleteEntity(dishCategory);
+                lunchUnitOfWork.Save();
 
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
