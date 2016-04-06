@@ -95,6 +95,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AddMenuModeltem.cs" />
+    <Compile Include="Models\DeleteMenuModel.cs" />
     <Compile Include="Models\DishCategoryModel.cs" />
     <Compile Include="Models\DishesModel.cs" />
     <Compile Include="Models\DishPictureModel.cs" />
