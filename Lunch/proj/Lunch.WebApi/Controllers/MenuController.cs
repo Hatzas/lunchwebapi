@@ -37,6 +37,8 @@ namespace Lunch.WebApi.Controllers
 
 
         // GET api/menu
+        [HttpGet]
+        [Route("api/menu")]
         public HttpResponseMessage Get(DateTime startDate, DateTime endDate)
         {
             try

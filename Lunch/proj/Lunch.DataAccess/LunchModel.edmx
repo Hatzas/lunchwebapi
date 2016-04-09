@@ -43,7 +43,7 @@
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="DishId" Type="int" Nullable="false" />
           <Property Name="SelectionCount" Type="int" />
-          <Property Name="Rating" Type="tinyint" />
+          <Property Name="Rating" Type="nvarchar" MaxLength="250" />
         </EntityType>
         <EntityType Name="Menu">
           <Key>
@@ -447,7 +447,7 @@ warning 6002: The table/view 'Lunch.Database.dbo.UserRole' does not have a prima
           <Property Name="UserId" Type="Int32" Nullable="false" />
           <Property Name="DishId" Type="Int32" Nullable="false" />
           <Property Name="SelectionCount" Type="Int32" />
-          <Property Name="Rating" Type="Byte" />
+          <Property Name="Rating" Type="String" />
           <NavigationProperty Name="Dish" Relationship="Lunch.DatabaseModel.FK_DishStatistics_Dish" FromRole="DishStatistic" ToRole="Dish" />
           <NavigationProperty Name="User" Relationship="Lunch.DatabaseModel.FK_DishStatistics_User" FromRole="DishStatistic" ToRole="User" />
         </EntityType>
