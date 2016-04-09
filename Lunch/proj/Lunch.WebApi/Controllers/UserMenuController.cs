@@ -13,34 +13,34 @@ namespace Lunch.WebApi.Controllers
 {
     public class UserMenuController : ApiController
     {
-        [Route("api/usermenu/list")]
-        public HttpResponseMessage GetUserMenuList(DateTime startDate, DateTime endDate)
-        {
-            try
-            {
-                var loggingUnitOfWork = new LunchUnitOfWork();
-                var userMenus = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate);
+        //[Route("api/usermenu/list")]
+        //public HttpResponseMessage GetUserMenuList(DateTime startDate, DateTime endDate)
+        //{
+        //    try
+        //    {
+        //        var loggingUnitOfWork = new LunchUnitOfWork();
+        //        var userMenus = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate);
 
-                return Request.CreateResponse(userMenus);
-            }
-            catch (Exception ex)
-            {
-                Logger.For(this).Error("api/usermenu/menulist Get: ", ex);
-            }
+        //        return Request.CreateResponse(userMenus);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.For(this).Error("api/usermenu/menulist Get: ", ex);
+        //    }
 
-            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
-        }
+        //    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
+        //}
 
 
         [HttpGet]
         [Route("api/usermenu")]
-        public HttpResponseMessage Get(DateTime startDate, DateTime endDate)
+        public HttpResponseMessage Get(DateTime startDate, DateTime endDate, string user)
         {
             try
             {
                 var culture = new System.Globalization.CultureInfo("ro-RO");
                 var loggingUnitOfWork = new LunchUnitOfWork();
-                var userMenusList = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate);
+                var userMenusList = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate, user);
 
                 var menuList = new List<MenuModel>();
 
@@ -67,7 +67,8 @@ namespace Lunch.WebApi.Controllers
                         Type = menuDetails.Dish.Type,
                         Serial = menuDetails.Serial,
                         Category = menuDetails.DishCategory.Id.ToString(),
-                        DishStatistics = menuDetails.DishStatistics.Select(s => new DishStatsModel { Rating = s.Rating, RatingCount = s.RatingCount }).ToList()
+                        DishStatistics = menuDetails.DishStatistics.Select(s => new DishStatsModel { Rating = s.Rating, RatingCount = s.RatingCount }).ToList(),
+                        SelectionCount = menuDetails.SelectionCount
                     });
                 }
 

@@ -15,5 +15,6 @@ namespace Lunch.Model.Extended
         public DishCategoryDetails DishCategory { get; set; }
 
         public IEnumerable<DishStatsDetails> DishStatistics { get; set; }
+        public int? SelectionCount { get; set; }
     }
 }

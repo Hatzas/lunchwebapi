@@ -32,10 +32,12 @@ namespace Lunch.DataAccessLayer.Repositories
             }
         }
 
-        public List<MenuDetails> GetUserMenusDetailsByInterval(DateTime startDate, DateTime endDate)
+        public List<MenuDetails> GetUserMenusDetailsByInterval(DateTime startDate, DateTime endDate, string userName)
         {
-            var query = (from menu in this.DbContext.Menus
-                         where menu.Date >= startDate && menu.Date <= endDate
+            var query = (from userMenu in this.DbContext.UserMenus
+                         join menu in this.DbContext.Menus on userMenu.MenuId equals menu.Id
+                         join user in this.DbContext.Users on userMenu.UserId equals user.Id
+                         where menu.Date >= startDate && menu.Date <= endDate && user.Name == userName
                          select new MenuDetails
                          {
                              Id = menu.Id,
@@ -59,7 +61,8 @@ namespace Lunch.DataAccessLayer.Repositories
                                  Name = menu.DishCategory.Name,
                              },
                              DishStatistics = menu.Dish.DishStatistics.Where(s => s.Rating != null).GroupBy(s => s.Rating)
-                                                                      .Select(g => new DishStatsDetails { Rating = g.Key, RatingCount = g.Count() })
+                                                                      .Select(g => new DishStatsDetails { Rating = g.Key, RatingCount = g.Count() }),
+                             SelectionCount = menu.Dish.DishStatistics.FirstOrDefault(s => s.UserId == user.Id).SelectionCount,
                          });
 
             return query.ToList();

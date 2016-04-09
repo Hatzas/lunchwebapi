@@ -8,6 +8,6 @@ namespace Lunch.WebApi.Models
     public class UserDishesModel : DishesModel
     {
         public List<DishStatsModel> DishStatistics { get; set; }
-        public int SelectionCount { get; set; }
+        public int? SelectionCount { get; set; }
     }
 }
