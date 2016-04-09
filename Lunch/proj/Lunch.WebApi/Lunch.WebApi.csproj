@@ -100,7 +100,9 @@
     <Compile Include="Models\DishCategoryModel.cs" />
     <Compile Include="Models\DishesModel.cs" />
     <Compile Include="Models\DishPictureModel.cs" />
+    <Compile Include="Models\DishStatsModel.cs" />
     <Compile Include="Models\MenuModel.cs" />
+    <Compile Include="Models\UserDishesModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -58,6 +58,8 @@ namespace Lunch.DataAccessLayer.Repositories
                                  Id = menu.DishCategory.Id,
                                  Name = menu.DishCategory.Name,
                              },
+                             DishStatistics = menu.Dish.DishStatistics.Where(s => s.Rating != null).GroupBy(s => s.Rating)
+                                                                      .Select(g => new DishStatsDetails { Rating = g.Key, RatingCount = g.Count() })
                          });
 
             return query.ToList();
