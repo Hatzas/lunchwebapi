@@ -1,5 +1,7 @@
 ﻿using Lunch.DataAccessLayer.Repositories;
+using Lunch.Logging;
 using Lunch.Model.Extended;
+using Lunch.WebApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +13,69 @@ namespace Lunch.WebApi.Controllers
 {
     public class UserMenuController : ApiController
     {
-        // GET: api/UserMenu
-        public IEnumerable<MenuDetails> Get(DateTime startDate, DateTime endDate)
+        [Route("api/usermenu/list")]
+        public HttpResponseMessage GetUserMenuList(DateTime startDate, DateTime endDate)
         {
-            var loggingUnitOfWork = new LunchUnitOfWork();
-            var userMenus = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate);
+            try
+            {
+                var loggingUnitOfWork = new LunchUnitOfWork();
+                var userMenus = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate);
 
-            return userMenus;
+                return Request.CreateResponse(userMenus);
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/usermenu/menulist Get: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
+        }
+
+
+        public HttpResponseMessage Get(DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                var culture = new System.Globalization.CultureInfo("ro-RO");
+                var loggingUnitOfWork = new LunchUnitOfWork();
+                var userMenusList = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate);
+
+                var menuList = new List<MenuModel>();
+
+                foreach (var menuDetails in userMenusList)
+                {
+                    var dayMenu = menuList.FirstOrDefault(m => m.Date.HasValue && menuDetails.Date.HasValue && m.Date.Value.Date == menuDetails.Date.Value.Date);
+
+                    if (dayMenu == null)
+                    {
+                        dayMenu = new MenuModel
+                        {
+                            Date = menuDetails.Date.Value,
+                            Day = culture.DateTimeFormat.GetDayName(menuDetails.Date.Value.DayOfWeek),
+                        };
+                        menuList.Add(dayMenu);
+                    }
+
+                    dayMenu.Dishes.Add(new DishesModel
+                    {
+                        Id = menuDetails.Dish.Id,
+                        Name = menuDetails.Dish.Name,
+                        Description = menuDetails.Dish.Description,
+                        DishPicture = new DishPictureModel { Id = menuDetails.Dish.DishPicture.Id, Thumbnail = menuDetails.Dish.DishPicture.Thumbnail },
+                        Type = menuDetails.Dish.Type,
+                        Serial = menuDetails.Serial,
+                    });
+                }
+
+
+                return Request.CreateResponse(menuList);
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/usermenu Get: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
         // GET: api/UserMenu/5

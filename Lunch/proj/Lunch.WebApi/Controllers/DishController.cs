@@ -1,4 +1,7 @@
 ﻿using Lunch.DataAccessLayer.Repositories;
+using Lunch.Logging;
+using Lunch.Model;
+using Lunch.WebApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,49 +13,131 @@ namespace Lunch.WebApi.Controllers
 {
     public class DishController : ApiController
     {
-        // GET: api/Dish
-        public IEnumerable<object> Get()
+        // GET: api/dish
+        public HttpResponseMessage Get()
         {
-            var loggingUnitOfWork = new LunchUnitOfWork();
-            var dishes = loggingUnitOfWork.DishRepository.GetAllDishes();
-
-            return dishes.Select(d => new
+            try
             {
-                Id = d.Id,
-                Name = d.Name,
-                Type = d.Type,
-                Thumbnail = d.DishPicture != null ? d.DishPicture.Thumbnail : null
-            });
-        }
+                var lunchUnitOfWork = new LunchUnitOfWork();
+                var dishes = lunchUnitOfWork.DishRepository.GetAllDishes();
 
-        // GET: api/Dish/5
-        public object Get(int id)
-        {
-            var loggingUnitOfWork = new LunchUnitOfWork();
-            var dish = loggingUnitOfWork.DishRepository.Find(id);
-
-            return new
+                return Request.CreateResponse(dishes.Select(d => new
+                {
+                    Id = d.Id,
+                    Name = d.Name,
+                    Description = d.Description,
+                    Type = d.Type,
+                    Thumbnail = d.DishPicture != null ? d.DishPicture.Thumbnail : null
+                }));
+            }
+            catch (Exception ex)
             {
-                Id = dish.Id,
-                Name = dish.Name,
-                Type = dish.Type,
-                Thumbnail = dish.DishPicture != null ? dish.DishPicture.Thumbnail : null
-            };
+                Logger.For(this).Error("api/dish Get: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
-        // POST: api/Dish
-        public void Post([FromBody]string value)
+        // GET: api/dish/id
+        public HttpResponseMessage Get(int id)
         {
+            try
+            {
+                var lunchUnitOfWork = new LunchUnitOfWork();
+                var dish = lunchUnitOfWork.DishRepository.Find(id);
+
+                return Request.CreateResponse(new
+                {
+                    Id = dish.Id,
+                    Name = dish.Name,
+                    Description = dish.Description,
+                    Type = dish.Type,
+                    Thumbnail = dish.DishPicture != null ? dish.DishPicture.Thumbnail : null
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/dish/{id} Get: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
-        // PUT: api/Dish/5
-        public void Put(int id, [FromBody]string value)
+        // POST: api/dish
+        public HttpResponseMessage Post(DishesModel model)
         {
+            try
+             {
+                var lunchUnitOfWork = new LunchUnitOfWork();
+
+                var dish = new Dish
+                {
+                    Name = model.Name,
+                    Description = model.Description,
+                    Type = model.Type,
+                };
+
+                lunchUnitOfWork.DishRepository.Upsert(dish);
+                lunchUnitOfWork.Save();
+
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/dish Post: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
-        // DELETE: api/Dish/5
-        public void Delete(int id)
+        // PUT: api/dish/{id}
+        public HttpResponseMessage Put(int id, DishesModel model)
         {
+            try
+            {
+                var lunchUnitOfWork = new LunchUnitOfWork();
+
+                var dish = lunchUnitOfWork.DishRepository.Find(id);
+                dish.Name = model.Name;
+                dish.Description = model.Description;
+                dish.Type = model.Type;
+
+                lunchUnitOfWork.DishRepository.Upsert(dish);
+                lunchUnitOfWork.Save();
+
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/dish Put: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
+        }
+
+        // DELETE: api/dish/{id}
+        public HttpResponseMessage Delete(int id)
+        {
+            try
+            {
+                var lunchUnitOfWork = new LunchUnitOfWork();
+
+                var dish = lunchUnitOfWork.DishRepository.Find(id);
+
+                lunchUnitOfWork.DishRepository.DeleteEntity(dish);
+                lunchUnitOfWork.Save();
+
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/dish Put: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
     }
 }

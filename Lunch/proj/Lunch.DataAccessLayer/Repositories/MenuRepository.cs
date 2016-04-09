@@ -37,7 +37,7 @@ namespace Lunch.DataAccessLayer.Repositories
         }
         public List<Menu> GetMenusByStartDateEndDate(DateTime startDate, DateTime endDate)
         {
-            return DbContext.Set<Menu>().Where(m => m.Date >= startDate && m.Date >= endDate).ToList();
+            return DbContext.Set<Menu>().Where(m => m.Date >= startDate && m.Date <= endDate).ToList();
         }
 
         public void DeleteMenuById(Menu menu)
@@ -74,6 +74,11 @@ namespace Lunch.DataAccessLayer.Repositories
                          });
 
             return query.ToList();
+        }
+
+        public List<Menu> GetMenuListByDates(List<DateTime> dateList)
+        {
+            return DbContext.Set<Menu>().Where(m => dateList.Contains(m.Date.Value)).ToList();
         }
         #endregion
 
