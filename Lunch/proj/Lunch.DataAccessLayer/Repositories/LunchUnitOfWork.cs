@@ -16,6 +16,7 @@ namespace Lunch.DataAccessLayer.Repositories
 
         private DishCategoryRepository _dishCategoryRepository;
         private DishRepository _dishRepository;
+        private DishPictureRepository _dishPictureRepository;
         private MenuRepository _menuRepository;
         private UserMenuRepository _userMenuRepository;
         #endregion
@@ -42,6 +43,18 @@ namespace Lunch.DataAccessLayer.Repositories
                     this._dishRepository = new DishRepository(_dbContext);
                 }
                 return _dishRepository;
+            }
+        }
+
+        public DishPictureRepository DishPictureRepository
+        {
+            get
+            {
+                if (this._dishPictureRepository == null)
+                {
+                    this._dishPictureRepository = new DishPictureRepository(_dbContext);
+                }
+                return _dishPictureRepository;
             }
         }
 

@@ -1,17 +1,17 @@
-﻿using Lunch.DataAccess;
-using Lunch.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lunch.DataAccess;
+using Lunch.Model;
 
 namespace Lunch.DataAccessLayer.Repositories
 {
-    public class DishRepository : RepositoryBase<Dish>
+    public class DishPictureRepository:RepositoryBase<DishPicture>
     {
-        #region Constructor
-        internal DishRepository(Entities context)
+         #region Constructor
+        internal DishPictureRepository(Entities context)
             : base(context)
         {
         }
@@ -19,7 +19,7 @@ namespace Lunch.DataAccessLayer.Repositories
 
 
         #region Public methods
-        public void Upsert(Dish entity)
+        public void Upsert(DishPicture entity)
         {
             if (entity.Id == default(int))
             {
@@ -31,14 +31,9 @@ namespace Lunch.DataAccessLayer.Repositories
             }
         }
 
-        public List<Dish> GetAllDishes()
+        public DishPicture GetDishPictureById(int id)
         {
-            return this.DbContext.Set<Dish>().ToList();
-        }
-
-        public Dish GetDishById(int id)
-        {
-            return this.DbContext.Set<Dish>().FirstOrDefault(d => d.Id == id);
+            return this.DbContext.Set<DishPicture>().FirstOrDefault(d => d.Id == id);
         }
         #endregion
     }

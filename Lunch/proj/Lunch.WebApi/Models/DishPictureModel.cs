@@ -8,6 +8,8 @@ namespace Lunch.WebApi.Models
     public class DishPictureModel
     {
         public int Id { get; set; }
-        public byte[] Thumbnail { get; set; }
+        //public byte[] Thumbnail { get; set; }
+        
+        public string Thumbnail { get; set; }
     }
 }

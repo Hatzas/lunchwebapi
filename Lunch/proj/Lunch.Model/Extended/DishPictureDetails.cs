@@ -10,5 +10,6 @@ namespace Lunch.Model.Extended
     {
         public int Id { get; set; }
         public byte[] Thumbnail { get; set; }
+       
     }
 }
