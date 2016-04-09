@@ -19,6 +19,7 @@ namespace Lunch.Model
         {
             this.UserMenus = new HashSet<UserMenu>();
             this.Roles = new HashSet<Role>();
+            this.DishStatistics = new HashSet<DishStats>();
         }
     
         public int Id { get; set; }
@@ -29,5 +30,7 @@ namespace Lunch.Model
         public virtual ICollection<UserMenu> UserMenus { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Role> Roles { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<DishStats> DishStatistics { get; set; }
     }
 }

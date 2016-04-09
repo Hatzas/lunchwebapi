@@ -42,4 +42,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="Thumbnail" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="7174c518-3a88-4068-b664-d9290772c720" ChangeDateTime="04/09/2016 07:54:53">
+    <Property Name="ElementName" Value="[dbo].[DishStatistics].[Count]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DishStatistics]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="SelectionCount" />
+  </Operation>
 </Operations>

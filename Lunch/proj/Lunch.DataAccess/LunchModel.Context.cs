@@ -34,5 +34,6 @@ namespace Lunch.DataAccess
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserMenu> UserMenus { get; set; }
+        public virtual DbSet<DishStats> DishStats { get; set; }
     }
 }

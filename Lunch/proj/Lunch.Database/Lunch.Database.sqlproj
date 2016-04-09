@@ -68,6 +68,7 @@
     <Build Include="Tables\UserMenu.sql" />
     <Build Include="Tables\Role.sql" />
     <Build Include="Tables\UserRole.sql" />
+    <Build Include="Tables\DishStatistics.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Lunch.Database.refactorlog" />
