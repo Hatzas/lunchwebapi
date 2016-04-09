@@ -32,6 +32,8 @@ namespace Lunch.WebApi.Controllers
         }
 
 
+        [HttpGet]
+        [Route("api/usermenu")]
         public HttpResponseMessage Get(DateTime startDate, DateTime endDate)
         {
             try
@@ -56,7 +58,7 @@ namespace Lunch.WebApi.Controllers
                         menuList.Add(dayMenu);
                     }
 
-                    dayMenu.Dishes.Add(new DishesModel
+                    dayMenu.Dishes.Add(new UserDishesModel
                     {
                         Id = menuDetails.Dish.Id,
                         Name = menuDetails.Dish.Name,
@@ -64,6 +66,7 @@ namespace Lunch.WebApi.Controllers
                         DishPicture = new DishPictureModel { Id = menuDetails.Dish.DishPicture.Id, Thumbnail = menuDetails.Dish.DishPicture.Thumbnail.ToString() },
                         Type = menuDetails.Dish.Type,
                         Serial = menuDetails.Serial,
+                        DishStatistics = menuDetails.DishStatistics.Select(s => new DishStatsModel { Rating = s.Rating, RatingCount = s.RatingCount }).ToList()
                     });
                 }
 
