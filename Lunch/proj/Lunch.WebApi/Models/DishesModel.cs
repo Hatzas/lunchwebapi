@@ -12,7 +12,7 @@ namespace Lunch.WebApi.Models
         public string Description { get; set; }
         public string Type { get; set; }
         public DishPictureModel DishPicture { get; set; }
-
         public string Serial { get; set; }
+        public string Category { get; set; }
     }
 }
