@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\DishPictureRepository.cs" />
     <Compile Include="Repositories\DishRepository.cs" />
     <Compile Include="Repositories\DishCategoryRepository.cs" />
     <Compile Include="Repositories\LunchUnitOfWork.cs" />

@@ -35,6 +35,11 @@ namespace Lunch.DataAccessLayer.Repositories
         {
             return this.DbContext.Set<Dish>().ToList();
         }
+
+        public Dish GetDishById(int id)
+        {
+            return this.DbContext.Set<Dish>().FirstOrDefault(d => d.Id == id);
+        }
         #endregion
     }
 }

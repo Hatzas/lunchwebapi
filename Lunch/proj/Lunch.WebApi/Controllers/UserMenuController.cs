@@ -61,7 +61,7 @@ namespace Lunch.WebApi.Controllers
                         Id = menuDetails.Dish.Id,
                         Name = menuDetails.Dish.Name,
                         Description = menuDetails.Dish.Description,
-                        DishPicture = new DishPictureModel { Id = menuDetails.Dish.DishPicture.Id, Thumbnail = menuDetails.Dish.DishPicture.Thumbnail },
+                        DishPicture = new DishPictureModel { Id = menuDetails.Dish.DishPicture.Id, Thumbnail = menuDetails.Dish.DishPicture.Thumbnail.ToString() },
                         Type = menuDetails.Dish.Type,
                         Serial = menuDetails.Serial,
                     });
@@ -97,6 +97,15 @@ namespace Lunch.WebApi.Controllers
         // DELETE: api/UserMenu/5
         public void Delete(int id)
         {
+        }
+
+        public static byte[] StringToByteArray(string hex)
+        {
+
+            return Enumerable.Range(0, hex.Length)
+                             .Where(x => x % 2 == 0)
+                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                             .ToArray();
         }
     }
 }

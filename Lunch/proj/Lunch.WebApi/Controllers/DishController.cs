@@ -1,4 +1,7 @@
-﻿using Lunch.DataAccessLayer.Repositories;
+﻿using System.Drawing;
+using System.IO;
+using System.Text;
+using Lunch.DataAccessLayer.Repositories;
 using Lunch.Logging;
 using Lunch.Model;
 using Lunch.WebApi.Models;
@@ -67,7 +70,7 @@ namespace Lunch.WebApi.Controllers
         public HttpResponseMessage Post(DishesModel model)
         {
             try
-             {
+            {
                 var lunchUnitOfWork = new LunchUnitOfWork();
 
                 var dish = new Dish
@@ -86,6 +89,70 @@ namespace Lunch.WebApi.Controllers
             catch (Exception ex)
             {
                 Logger.For(this).Error("api/dish Post: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
+        }
+
+        public Image StringToImage(string inputString)
+        {
+            byte[] imageBytes = Encoding.Unicode.GetBytes(inputString);
+
+            // Don't need to use the constructor that takes the starting offset and length
+            // as we're using the whole byte array.
+            MemoryStream ms = new MemoryStream(imageBytes);
+
+            Image image = Image.FromStream(ms, true, true);
+
+            return image;
+        }
+
+        [HttpPost]
+        [Route("api/dish/thumbnail")]
+        public HttpResponseMessage PostDishThumbnail(DishesModel model)
+        {
+            try
+            {
+                //Convert image to thumbnail
+                string base64String;
+
+                var picture = StringToImage(model.DishPicture.Thumbnail);
+                Image thumbnail = picture.GetThumbnailImage(320, 230, () => false, IntPtr.Zero);
+                using (Image image = thumbnail)
+                {
+                    using (MemoryStream m = new MemoryStream())
+                    {
+                        image.Save(m, image.RawFormat);
+                        byte[] imageBytes = m.ToArray();
+
+                        // Convert byte[] to Base64 String
+                        base64String = Convert.ToBase64String(imageBytes);
+                    }
+                }
+
+                //-------------
+
+                var lunchUnitOfWork = new LunchUnitOfWork();
+                var dish = lunchUnitOfWork.DishRepository.GetDishById(model.Id);
+                if (dish != null)
+                {
+                    var dishPicture = new DishPicture();
+                    dishPicture.Id = model.DishPicture.Id;
+                    dishPicture.Thumbnail = StringToByteArray(base64String);
+
+                    lunchUnitOfWork.DishPictureRepository.Upsert(dishPicture);
+                    lunchUnitOfWork.Save();
+
+
+                    dish.DishPictureId = model.DishPicture.Id;
+                    lunchUnitOfWork.Save();
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/dish/thumbnail Post: ", ex);
             }
 
             return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
@@ -138,6 +205,23 @@ namespace Lunch.WebApi.Controllers
             }
 
             return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
+        }
+
+        public static byte[] StringToByteArray(string hex)
+        {
+
+            return Enumerable.Range(0, hex.Length)
+                             .Where(x => x % 2 == 0)
+                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                             .ToArray();
+        }
+
+        public static string ByteArrayToString(byte[] ba)
+        {
+            StringBuilder hex = new StringBuilder(ba.Length * 2);
+            foreach (byte b in ba)
+                hex.AppendFormat("{0:x2}", b);
+            return hex.ToString();
         }
     }
 }

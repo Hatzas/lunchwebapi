@@ -60,6 +60,9 @@
     <Compile Include="DishPicture.cs">
       <DependentUpon>LunchModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DishStats.cs">
+      <DependentUpon>LunchModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Extended\DishCategoryDetails.cs" />
     <Compile Include="Extended\DishDetails.cs" />
     <Compile Include="Extended\DishPictureDetails.cs" />

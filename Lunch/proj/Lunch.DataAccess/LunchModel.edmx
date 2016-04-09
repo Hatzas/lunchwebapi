@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="Lunch.DatabaseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="Lunch.DatabaseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="__RefactorLog">
           <Key>
             <PropertyRef Name="OperationKey" />
@@ -34,6 +34,16 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Thumbnail" Type="varbinary(max)" />
+        </EntityType>
+        <EntityType Name="DishStatistics">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="DishId" Type="int" Nullable="false" />
+          <Property Name="SelectionCount" Type="int" />
+          <Property Name="Rating" Type="tinyint" />
         </EntityType>
         <EntityType Name="Menu">
           <Key>
@@ -88,6 +98,30 @@ warning 6002: The table/view 'Lunch.Database.dbo.UserRole' does not have a prima
             </Principal>
             <Dependent Role="Dish">
               <PropertyRef Name="DishPictureId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DishStatistics_Dish">
+          <End Role="Dish" Type="Self.Dish" Multiplicity="1" />
+          <End Role="DishStatistics" Type="Self.DishStatistics" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Dish">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="DishStatistics">
+              <PropertyRef Name="DishId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DishStatistics_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="DishStatistics" Type="Self.DishStatistics" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="DishStatistics">
+              <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -168,6 +202,7 @@ warning 6002: The table/view 'Lunch.Database.dbo.UserRole' does not have a prima
           <EntitySet Name="Dish" EntityType="Self.Dish" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DishCategory" EntityType="Self.DishCategory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DishPicture" EntityType="Self.DishPicture" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DishStatistics" EntityType="Self.DishStatistics" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Menu" EntityType="Self.Menu" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Role" EntityType="Self.Role" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
@@ -181,6 +216,14 @@ warning 6002: The table/view 'Lunch.Database.dbo.UserRole' does not have a prima
           <AssociationSet Name="FK_Dish_DishPicture" Association="Self.FK_Dish_DishPicture">
             <End Role="DishPicture" EntitySet="DishPicture" />
             <End Role="Dish" EntitySet="Dish" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DishStatistics_Dish" Association="Self.FK_DishStatistics_Dish">
+            <End Role="Dish" EntitySet="Dish" />
+            <End Role="DishStatistics" EntitySet="DishStatistics" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DishStatistics_User" Association="Self.FK_DishStatistics_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="DishStatistics" EntitySet="DishStatistics" />
           </AssociationSet>
           <AssociationSet Name="FK_Menu_Dish" Association="Self.FK_Menu_Dish">
             <End Role="Dish" EntitySet="Dish" />
@@ -228,6 +271,7 @@ warning 6002: The table/view 'Lunch.Database.dbo.UserRole' does not have a prima
           <Property Name="DishPictureId" Type="Int32" />
           <NavigationProperty Name="DishPicture" Relationship="Self.FK_Dish_DishPicture" FromRole="Dish" ToRole="DishPicture" />
           <NavigationProperty Name="Menus" Relationship="Self.FK_Menu_Dish" FromRole="Dish" ToRole="Menu" />
+          <NavigationProperty Name="DishStatistics" Relationship="Lunch.DatabaseModel.FK_DishStatistics_Dish" FromRole="Dish" ToRole="DishStatistic" />
         </EntityType>
         <EntityType Name="DishCategory">
           <Key>
@@ -275,6 +319,7 @@ warning 6002: The table/view 'Lunch.Database.dbo.UserRole' does not have a prima
           <Property Name="Name" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="UserMenus" Relationship="Self.FK_UserMenu_User" FromRole="User" ToRole="UserMenu" />
           <NavigationProperty Name="Roles" Relationship="Self.UserRole" FromRole="User" ToRole="Role" />
+          <NavigationProperty Name="DishStatistics" Relationship="Lunch.DatabaseModel.FK_DishStatistics_User" FromRole="User" ToRole="DishStatistic" />
         </EntityType>
         <EntityType Name="UserMenu">
           <Key>
@@ -384,7 +429,52 @@ warning 6002: The table/view 'Lunch.Database.dbo.UserRole' does not have a prima
             <End Role="Role" EntitySet="Roles" />
             <End Role="User" EntitySet="Users" />
           </AssociationSet>
+          <EntitySet Name="DishStats" EntityType="Lunch.DatabaseModel.DishStats" />
+          <AssociationSet Name="FK_DishStatistics_Dish" Association="Lunch.DatabaseModel.FK_DishStatistics_Dish">
+            <End Role="Dish" EntitySet="Dishes" />
+            <End Role="DishStatistic" EntitySet="DishStats" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DishStatistics_User" Association="Lunch.DatabaseModel.FK_DishStatistics_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="DishStatistic" EntitySet="DishStats" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="DishStats">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="DishId" Type="Int32" Nullable="false" />
+          <Property Name="SelectionCount" Type="Int32" />
+          <Property Name="Rating" Type="Byte" />
+          <NavigationProperty Name="Dish" Relationship="Lunch.DatabaseModel.FK_DishStatistics_Dish" FromRole="DishStatistic" ToRole="Dish" />
+          <NavigationProperty Name="User" Relationship="Lunch.DatabaseModel.FK_DishStatistics_User" FromRole="DishStatistic" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_DishStatistics_Dish">
+          <End Type="Lunch.DatabaseModel.Dish" Role="Dish" Multiplicity="1" />
+          <End Type="Lunch.DatabaseModel.DishStats" Role="DishStatistic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Dish">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="DishStatistic">
+              <PropertyRef Name="DishId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DishStatistics_User">
+          <End Type="Lunch.DatabaseModel.User" Role="User" Multiplicity="1" />
+          <End Type="Lunch.DatabaseModel.DishStats" Role="DishStatistic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="DishStatistic">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -471,6 +561,17 @@ warning 6002: The table/view 'Lunch.Database.dbo.UserRole' does not have a prima
               <ScalarProperty Name="Id" ColumnName="UserId" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="DishStats">
+            <EntityTypeMapping TypeName="Lunch.DatabaseModel.DishStats">
+              <MappingFragment StoreEntitySet="DishStatistics">
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="SelectionCount" ColumnName="SelectionCount" />
+                <ScalarProperty Name="DishId" ColumnName="DishId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
