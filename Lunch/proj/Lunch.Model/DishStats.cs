@@ -18,7 +18,7 @@ namespace Lunch.Model
         public int UserId { get; set; }
         public int DishId { get; set; }
         public Nullable<int> SelectionCount { get; set; }
-        public Nullable<byte> Rating { get; set; }
+        public string Rating { get; set; }
     
         public virtual Dish Dish { get; set; }
         public virtual User User { get; set; }
