@@ -68,7 +68,7 @@ namespace Lunch.WebApi.Controllers
                         Id = menuDetails.Dish.Id,
                         Name = menuDetails.Dish.Name,
                         Description = menuDetails.Dish.Description,
-                        DishPicture = new DishPictureModel { Id = menuDetails.Dish.DishPicture.Id, Thumbnail = menuDetails.Dish.DishPicture.Thumbnail.ToString() },
+                        DishPicture = new DishPictureModel { Id = menuDetails.Dish.DishPicture.Id, Thumbnail = Convert.ToBase64String(menuDetails.Dish.DishPicture.Thumbnail)},
                         Type = menuDetails.Dish.Type,
                         Serial = menuDetails.Serial,
                     });
