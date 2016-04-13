@@ -103,6 +103,8 @@
     <Compile Include="Models\DishStatsModel.cs" />
     <Compile Include="Models\MenuModel.cs" />
     <Compile Include="Models\UserDishesModel.cs" />
+    <Compile Include="Models\UserMenuItem.cs" />
+    <Compile Include="Models\UserMenuModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -144,7 +146,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>false</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>8434</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

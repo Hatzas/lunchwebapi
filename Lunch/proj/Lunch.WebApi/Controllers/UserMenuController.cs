@@ -40,7 +40,18 @@ namespace Lunch.WebApi.Controllers
             {
                 var culture = new System.Globalization.CultureInfo("ro-RO");
                 var loggingUnitOfWork = new LunchUnitOfWork();
-                var userMenusList = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate, user);
+
+
+                var userMenusList = new List<MenuDetails>();
+                if (!string.IsNullOrEmpty(user))
+                {
+                    userMenusList = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate, user);
+                }
+                else
+                {
+                    userMenusList = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval2(startDate, endDate);
+                }
+
 
                 var menuList = new List<MenuModel>();
 
@@ -68,7 +79,8 @@ namespace Lunch.WebApi.Controllers
                         Serial = menuDetails.Serial,
                         Category = menuDetails.DishCategory.Id.ToString(),
                         DishStatistics = menuDetails.DishStatistics.Select(s => new DishStatsModel { Rating = s.Rating, RatingCount = s.RatingCount }).ToList(),
-                        SelectionCount = menuDetails.SelectionCount
+                        SelectionCount = menuDetails.SelectionCount.HasValue ? menuDetails.SelectionCount : 0,
+                        Selected = menuDetails.Selected
                     });
                 }
 
@@ -83,28 +95,34 @@ namespace Lunch.WebApi.Controllers
             return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
-        // GET: api/UserMenu/5
-        public string Get(int id)
+
+        [HttpPost]
+        [HttpPut]
+        [Route("api/usermenu")]
+        public HttpResponseMessage Post(UserMenuModel userMenuModel)
         {
-            return "value";
+            try
+            {
+
+
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/usermenu Post/Put: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
-        // POST: api/UserMenu
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT: api/UserMenu/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
 
         // DELETE: api/UserMenu/5
         public void Delete(int id)
         {
         }
 
-        public static byte[] StringToByteArray(string hex)
+        private static byte[] StringToByteArray(string hex)
         {
 
             return Enumerable.Range(0, hex.Length)

@@ -16,5 +16,7 @@ namespace Lunch.Model.Extended
 
         public IEnumerable<DishStatsDetails> DishStatistics { get; set; }
         public int? SelectionCount { get; set; }
+
+        public bool Selected { get; set; }
     }
 }

@@ -9,5 +9,7 @@ namespace Lunch.WebApi.Models
     {
         public List<DishStatsModel> DishStatistics { get; set; }
         public int? SelectionCount { get; set; }
+
+        public bool Selected { get; set; }
     }
 }

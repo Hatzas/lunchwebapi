@@ -36,6 +36,7 @@ namespace Lunch.DataAccessLayer.Repositories
         {
             var query = (from menu in this.DbContext.Menus
                          where menu.Date >= startDate && menu.Date <= endDate
+                         let user = this.DbContext.Users.FirstOrDefault(u => u.Name == userName)
                          select new MenuDetails
                          {
                              Id = menu.Id,
@@ -60,7 +61,44 @@ namespace Lunch.DataAccessLayer.Repositories
                              },
                              DishStatistics = menu.Dish.DishStatistics.Where(s => s.Rating != null).GroupBy(s => s.Rating)
                                                                       .Select(g => new DishStatsDetails { Rating = g.Key, RatingCount = g.Count() }),
-                             SelectionCount = 666,
+                             SelectionCount = menu.Dish.DishStatistics.FirstOrDefault(s => s.UserId == user.Id).SelectionCount,
+                             Selected = menu.UserMenus.Any(m => m.User.Name == userName)
+                         });
+
+
+            return query.ToList();
+        }
+
+
+        public List<MenuDetails> GetUserMenusDetailsByInterval2(DateTime startDate, DateTime endDate)
+        {
+            var query = (from menu in this.DbContext.Menus
+                         where menu.Date >= startDate && menu.Date <= endDate
+                         select new MenuDetails
+                         {
+                             Id = menu.Id,
+                             Date = menu.Date,
+                             Serial = menu.Serial,
+                             Dish = new DishDetails()
+                             {
+                                 Id = menu.Dish.Id,
+                                 Name = menu.Dish.Name,
+                                 Description = menu.Dish.Description,
+                                 Type = menu.Dish.Type,
+                                 DishPicture = new DishPictureDetails()
+                                 {
+                                     Id = menu.Dish.DishPicture.Id,
+                                     Thumbnail = menu.Dish.DishPicture.Thumbnail,
+                                 }
+                             },
+                             DishCategory = new DishCategoryDetails()
+                             {
+                                 Id = menu.DishCategory.Id,
+                                 Name = menu.DishCategory.Name,
+                             },
+                             DishStatistics = menu.Dish.DishStatistics.Where(s => s.Rating != null).GroupBy(s => s.Rating)
+                                                                      .Select(g => new DishStatsDetails { Rating = g.Key, RatingCount = g.Count() }),
+                             SelectionCount = 0,
                          });
 
             return query.ToList();
