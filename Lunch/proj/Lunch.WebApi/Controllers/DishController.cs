@@ -1,9 +1,14 @@
 ﻿using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Lunch.DataAccessLayer.Repositories;
 using Lunch.Logging;
 using Lunch.Model;
+using Lunch.WebApi.Helpers;
+using Lunch.WebApi.Helpers.CustomException;
 using Lunch.WebApi.Models;
 using System;
 using System.Collections.Generic;
@@ -83,8 +88,12 @@ namespace Lunch.WebApi.Controllers
                 lunchUnitOfWork.DishRepository.Upsert(dish);
                 lunchUnitOfWork.Save();
 
-
-                return Request.CreateResponse(HttpStatusCode.OK);
+                return Request.CreateResponse(new
+                {
+                    Id = dish.Id,
+                    Message = HttpStatusCode.OK,
+                });
+                //return Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
@@ -107,48 +116,172 @@ namespace Lunch.WebApi.Controllers
             return image;
         }
 
+        //[HttpPost]
+        //[Route("api/dish/thumbnail")]
+        //public HttpResponseMessage PostDishThumbnail(DishesModel model)
+        //{
+        //    try
+        //    {
+        //        //Convert image to thumbnail
+        //        string base64String;
+
+        //        var picture = StringToImage(model.DishPicture.Thumbnail);
+        //        Image thumbnail = picture.GetThumbnailImage(320, 230, () => false, IntPtr.Zero);
+        //        using (Image image = thumbnail)
+        //        {
+        //            using (MemoryStream m = new MemoryStream())
+        //            {
+        //                image.Save(m, image.RawFormat);
+        //                byte[] imageBytes = m.ToArray();
+
+        //                // Convert byte[] to Base64 String
+        //                base64String = Convert.ToBase64String(imageBytes);
+        //            }
+        //        }
+
+        //        //-------------
+
+        //        var lunchUnitOfWork = new LunchUnitOfWork();
+        //        var dish = lunchUnitOfWork.DishRepository.GetDishById(model.Id);
+        //        if (dish != null)
+        //        {
+        //            var dishPicture = new DishPicture();
+        //            dishPicture.Id = model.DishPicture.Id;
+        //            dishPicture.Thumbnail = StringToByteArray(base64String);
+
+        //            lunchUnitOfWork.DishPictureRepository.Upsert(dishPicture);
+        //            lunchUnitOfWork.Save();
+
+
+        //            dish.DishPictureId = model.DishPicture.Id;
+        //            lunchUnitOfWork.Save();
+        //        }
+
+        //        return Request.CreateResponse(HttpStatusCode.OK);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.For(this).Error("api/dish/thumbnail Post: ", ex);
+        //    }
+
+        //    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
+        //}
+
+
         [HttpPost]
         [Route("api/dish/thumbnail")]
-        public HttpResponseMessage PostDishThumbnail(DishesModel model)
+        public async Task<HttpResponseMessage> PostDishThumbnail()
         {
+            var tempFolder = ControllerHelper.GetNewTemporaryFolder();
+            MultipartFormDataStreamProvider provider = null;
             try
             {
+                // Check if the request contains multipart/form-data.
+                if (!Request.Content.IsMimeMultipartContent())
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.Forbidden,
+                        "This request is not properly formatted");
+                }
+                if (!Directory.Exists(tempFolder.FullFolderPath))
+                    Directory.CreateDirectory(tempFolder.FullFolderPath);
+
+                provider = new MultipartFormDataStreamProvider(tempFolder.FullFolderPath);
+
+                // Read the form data and return an async task.
+                await Request.Content.ReadAsMultipartAsync(provider);
+
+
+                //get the form data.
+                Dictionary<string, string> formData = ControllerHelper.GetFormDataDictionaryFromJson(provider.FormData);
+
+                //validate configuration form data
+                FormData thumbnailFormData = ControllerHelper.ValidateFormData(formData);
+
+
+                //Validate resource file upload
+                var fileUploadError = string.Empty;
+                MultipartFileData file = ControllerHelper.ValidateFileUpload(provider.FileData);
+
+                var fileInfo = new FileInfo(file.LocalFileName);
+                var fileName = ControllerHelper.GetFileNameFromHeader(file.Headers.ContentDisposition);
+
+                //---------------
+
+
                 //Convert image to thumbnail
                 string base64String;
+                
+                //var picture = StringToImage(model.DishPicture.Thumbnail);
+                var picture = Image.FromFile(fileInfo.FullName);
+               // var picture2 = Image.FromStream(file);
 
-                var picture = StringToImage(model.DishPicture.Thumbnail);
-                Image thumbnail = picture.GetThumbnailImage(320, 230, () => false, IntPtr.Zero);
-                using (Image image = thumbnail)
+                byte[] thumbNew;
+                //---------------------------------------
+                using (var srcImage = Image.FromFile(fileInfo.FullName))
+                using (var newImage = new Bitmap(100, 100))
+                using (var graphics = Graphics.FromImage(newImage))
+                using (var stream = new MemoryStream())
                 {
-                    using (MemoryStream m = new MemoryStream())
-                    {
-                        image.Save(m, image.RawFormat);
-                        byte[] imageBytes = m.ToArray();
+                    graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                    graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                    graphics.DrawImage(srcImage, new Rectangle(0, 0, 320, 230));
+                    newImage.Save(stream, ImageFormat.Png);
+                    
+                   // var thumbNew = File(stream.ToArray(), "image/png");
+                    thumbNew = stream.ToArray();
 
-                        // Convert byte[] to Base64 String
-                        base64String = Convert.ToBase64String(imageBytes);
-                    }
-                }
+                    //artwork.ArtworkThumbnail = thumbNew.FileContents;
+                }    
+
+                //---------------------------------------
+                
+                //Image thumbnail = picture.GetThumbnailImage(320, 230, () => false, IntPtr.Zero);
+                //using (Image image = thumbnail)
+                //{
+                //    using (MemoryStream m = new MemoryStream())
+                //    {
+                //        image.Save(m, ImageFormat.Bmp);
+                //        byte[] imageBytes = m.ToArray();
+
+                //        // Convert byte[] to Base64 String
+                //        base64String = Convert.ToBase64String(imageBytes);
+                //    }
+                //}
 
                 //-------------
 
                 var lunchUnitOfWork = new LunchUnitOfWork();
-                var dish = lunchUnitOfWork.DishRepository.GetDishById(model.Id);
-                if (dish != null)
+                int dishIdValue;
+                if (Int32.TryParse(thumbnailFormData.DishId, out dishIdValue))
                 {
-                    var dishPicture = new DishPicture();
-                    dishPicture.Id = model.DishPicture.Id;
-                    dishPicture.Thumbnail = StringToByteArray(base64String);
+                    var dish = lunchUnitOfWork.DishRepository.GetDishById(dishIdValue);
+                    if (dish != null)
+                    {
+                        var dishPicture = new DishPicture();
+                        //dishPicture.Id = model.DishPicture.Id;
+                        //dishPicture.Thumbnail = StringToByteArray(base64String);
+                        dishPicture.Thumbnail = thumbNew;
 
-                    lunchUnitOfWork.DishPictureRepository.Upsert(dishPicture);
-                    lunchUnitOfWork.Save();
+                        lunchUnitOfWork.DishPictureRepository.Upsert(dishPicture);
+                        lunchUnitOfWork.Save();
 
 
-                    dish.DishPictureId = model.DishPicture.Id;
-                    lunchUnitOfWork.Save();
+                        dish.DishPictureId = dishPicture.Id;
+                        lunchUnitOfWork.Save();
+                    }
+
+                    return Request.CreateResponse(HttpStatusCode.OK);
                 }
+            }
+            catch (CustomValidationException ex)
+            {
 
-                return Request.CreateResponse(HttpStatusCode.OK);
+                //cleanup temp folder
+                if (tempFolder != null)
+                    ControllerHelper.DirectoryCleanup(new List<string> { tempFolder.FullFolderPath });
+
+                return Request.CreateErrorResponse(ex.HttpResponseStatus, ex.Message);
             }
             catch (Exception ex)
             {
