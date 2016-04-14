@@ -9,6 +9,6 @@ namespace Lunch.WebApi.Models
     {
         public List<UserMenuItem> UserMenus { get; set; }
 
-        public string UserName { get; set; }
+        public string UserId { get; set; }
     }
 }

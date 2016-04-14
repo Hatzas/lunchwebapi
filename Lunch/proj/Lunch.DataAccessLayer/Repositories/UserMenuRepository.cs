@@ -103,6 +103,15 @@ namespace Lunch.DataAccessLayer.Repositories
 
             return query.ToList();
         }
+
+
+        public List<UserMenu> GetUserMenuListByDates(List<DateTime> dateList)
+        {
+            var query = DbContext.Set<UserMenu>().Where(m => dateList.Contains(m.Date.Value));
+
+
+            return query.ToList();
+        }
         #endregion
     }
 }

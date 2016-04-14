@@ -1,5 +1,6 @@
 ﻿using Lunch.DataAccessLayer.Repositories;
 using Lunch.Logging;
+using Lunch.Model;
 using Lunch.Model.Extended;
 using Lunch.WebApi.Models;
 using System;
@@ -99,11 +100,29 @@ namespace Lunch.WebApi.Controllers
         [HttpPost]
         [HttpPut]
         [Route("api/usermenu")]
-        public HttpResponseMessage Post(UserMenuModel userMenuModel)
+        public HttpResponseMessage UpsertUserMenu(UserMenuModel userMenuModel)
         {
             try
             {
+                var menuDateList = userMenuModel.UserMenus.Select(m => m.Date).ToList();
 
+                var loggingUnitOfWork = new LunchUnitOfWork();
+                //{"UserId":"l.s.petrescu","UserMenus":[{"DishId":"49", "DishCategoryId":"1", "Date":"2016-04-18"},{"DishId":"81", "DishCategoryId":"2", "Date":"2016-04-18"}]}
+                //var user = loggingUnitOfWork.UserMenuRepository.g
+
+                var userMenuList = loggingUnitOfWork.UserMenuRepository.GetUserMenuListByDates(menuDateList);
+                foreach (var userMenu in userMenuList)
+                {
+                    loggingUnitOfWork.UserMenuRepository.DeleteEntity(userMenu);
+                }
+
+                foreach (var item in userMenuModel.UserMenus)
+                {
+                    //var userMenu = new UserMenu
+                    //{
+                         
+                    //}
+                }
 
 
                 return Request.CreateResponse(HttpStatusCode.OK);
