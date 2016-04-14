@@ -10,18 +10,20 @@ namespace Lunch.DataAccessLayer.Repositories
     public class LunchUnitOfWork : IDisposable
     {
         #region Private
-        private readonly Entities _dbContext;        
+        private readonly Entities _dbContext;
         private bool disposed = false;
 
 
         private DishCategoryRepository _dishCategoryRepository;
         private DishRepository _dishRepository;
         private DishPictureRepository _dishPictureRepository;
+        private DishStatisticsRepository _dishStatisticsRepository;
         private MenuRepository _menuRepository;
+        private UserRepository _userRepository;
         private UserMenuRepository _userMenuRepository;
         #endregion
 
-        #region Repositoies        
+        #region Repositoies
         public DishCategoryRepository DishCategoryRepository
         {
             get
@@ -58,6 +60,18 @@ namespace Lunch.DataAccessLayer.Repositories
             }
         }
 
+        public DishStatisticsRepository DishStatisticsRepository
+        {
+            get
+            {
+                if (this._dishStatisticsRepository == null)
+                {
+                    this._dishStatisticsRepository = new DishStatisticsRepository(_dbContext);
+                }
+                return _dishStatisticsRepository;
+            }
+        }
+
         public MenuRepository MenuRepository
         {
             get
@@ -67,6 +81,18 @@ namespace Lunch.DataAccessLayer.Repositories
                     this._menuRepository = new MenuRepository(_dbContext);
                 }
                 return _menuRepository;
+            }
+        }
+
+        public UserRepository UserRepository
+        {
+            get
+            {
+                if (this._userRepository == null)
+                {
+                    this._userRepository = new UserRepository(_dbContext);
+                }
+                return _userRepository;
             }
         }
 
@@ -112,9 +138,7 @@ namespace Lunch.DataAccessLayer.Repositories
         public LunchUnitOfWork()
         {
             _dbContext = new Entities();
-        }        
-
-        
+        }
 
         public int Save()
         {

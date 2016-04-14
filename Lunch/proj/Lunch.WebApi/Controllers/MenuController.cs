@@ -15,27 +15,6 @@ namespace Lunch.WebApi.Controllers
 {
     public class MenuController : ApiController
     {
-        //GET api/menu/list
-        [HttpGet]
-        [Route("api/menu/list")]
-        public HttpResponseMessage GetMenuList(DateTime startDate, DateTime endDate)
-        {
-            try
-            {
-                var loggingUnitOfWork = new LunchUnitOfWork();
-                var menuList = loggingUnitOfWork.MenuRepository.GetMenusDetailsByStartDateAndEndDate(startDate, endDate);
-
-                return Request.CreateResponse(menuList);
-            }
-            catch (Exception ex)
-            {
-                Logger.For(this).Error("api/menu/menulist Get: ", ex);
-            }
-
-            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
-        }
-
-
         // GET api/menu
         [HttpGet]
         [Route("api/menu")]
@@ -142,7 +121,6 @@ namespace Lunch.WebApi.Controllers
             return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
-        // DELETE api/menu/delete
         [Route("api/menu/delete")]
         [HttpPost]
         public HttpResponseMessage Delete(DeleteMenuModel model)
@@ -163,12 +141,14 @@ namespace Lunch.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                Logger.For(this).Error("api/menu/delete Post: ", ex);
+                Logger.For(this).Error("api/menu/delete Delete: ", ex);
             }
 
             return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
+
+        #region Private
         public static byte[] StringToByteArray(string hex)
         {
 
@@ -177,5 +157,6 @@ namespace Lunch.WebApi.Controllers
                              .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
                              .ToArray();
         }
+        #endregion
     }
 }

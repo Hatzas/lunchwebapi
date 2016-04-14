@@ -209,7 +209,7 @@ namespace Lunch.WebApi.Controllers
 
 
                 //Convert image to thumbnail
-                string base64String;
+                //string base64String;
                 
                 //var picture = StringToImage(model.DishPicture.Thumbnail);
                 var picture = Image.FromFile(fileInfo.FullName);
@@ -335,6 +335,48 @@ namespace Lunch.WebApi.Controllers
             catch (Exception ex)
             {
                 Logger.For(this).Error("api/dish Put: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
+        }
+
+        [HttpPost]
+        [Route("api/dish/rating")]
+        public HttpResponseMessage DishRating(DishRatingModel model)
+        {
+            try
+            {
+                var lunchUnitOfWork = new LunchUnitOfWork();
+
+                var user = lunchUnitOfWork.UserRepository.GetUserByName(model.UserId);
+                var dish = lunchUnitOfWork.DishRepository.Find(model.DishId);
+                var userDishStats = lunchUnitOfWork.DishStatisticsRepository.GetDishStatistic(model.DishId, user.Id);
+
+
+                if (userDishStats == null)
+                {
+                    userDishStats = new DishStats
+                    {
+                        Rating = model.Rating,
+                        UserId = user.Id,
+                        DishId = dish.Id
+                    };
+                }
+                else
+                {
+                    userDishStats.Rating = model.Rating;
+                }
+
+
+                lunchUnitOfWork.DishStatisticsRepository.Upsert(userDishStats);
+                lunchUnitOfWork.Save();
+
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/dish/rating Post: ", ex);
             }
 
             return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
