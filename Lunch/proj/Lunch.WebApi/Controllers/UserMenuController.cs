@@ -1,5 +1,6 @@
 ﻿using Lunch.DataAccessLayer.Repositories;
 using Lunch.Logging;
+using Lunch.Model;
 using Lunch.Model.Extended;
 using Lunch.WebApi.Models;
 using System;
@@ -13,32 +14,45 @@ namespace Lunch.WebApi.Controllers
 {
     public class UserMenuController : ApiController
     {
-        [Route("api/usermenu/list")]
-        public HttpResponseMessage GetUserMenuList(DateTime startDate, DateTime endDate)
-        {
-            try
-            {
-                var loggingUnitOfWork = new LunchUnitOfWork();
-                var userMenus = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate);
+        //[Route("api/usermenu/list")]
+        //public HttpResponseMessage GetUserMenuList(DateTime startDate, DateTime endDate)
+        //{
+        //    try
+        //    {
+        //        var loggingUnitOfWork = new LunchUnitOfWork();
+        //        var userMenus = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate);
 
-                return Request.CreateResponse(userMenus);
-            }
-            catch (Exception ex)
-            {
-                Logger.For(this).Error("api/usermenu/menulist Get: ", ex);
-            }
+        //        return Request.CreateResponse(userMenus);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.For(this).Error("api/usermenu/menulist Get: ", ex);
+        //    }
 
-            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
-        }
+        //    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
+        //}
 
 
-        public HttpResponseMessage Get(DateTime startDate, DateTime endDate)
+        [HttpGet]
+        [Route("api/usermenu")]
+        public HttpResponseMessage Get(DateTime startDate, DateTime endDate, string user)
         {
             try
             {
                 var culture = new System.Globalization.CultureInfo("ro-RO");
                 var loggingUnitOfWork = new LunchUnitOfWork();
-                var userMenusList = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate);
+
+
+                var userMenusList = new List<MenuDetails>();
+                if (!string.IsNullOrEmpty(user))
+                {
+                    userMenusList = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate, user);
+                }
+                else
+                {
+                    userMenusList = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval2(startDate, endDate);
+                }
+
 
                 var menuList = new List<MenuModel>();
 
@@ -56,14 +70,18 @@ namespace Lunch.WebApi.Controllers
                         menuList.Add(dayMenu);
                     }
 
-                    dayMenu.Dishes.Add(new DishesModel
+                    dayMenu.Dishes.Add(new UserDishesModel
                     {
                         Id = menuDetails.Dish.Id,
                         Name = menuDetails.Dish.Name,
                         Description = menuDetails.Dish.Description,
-                        DishPicture = new DishPictureModel { Id = menuDetails.Dish.DishPicture.Id, Thumbnail = menuDetails.Dish.DishPicture.Thumbnail.ToString() },
+                        DishPicture = new DishPictureModel { Id = menuDetails.Dish.DishPicture.Id, Thumbnail = Convert.ToBase64String(menuDetails.Dish.DishPicture.Thumbnail) },
                         Type = menuDetails.Dish.Type,
                         Serial = menuDetails.Serial,
+                        Category = menuDetails.DishCategory.Id.ToString(),
+                        DishStatistics = menuDetails.DishStatistics.Select(s => new DishStatsModel { Rating = s.Rating, RatingCount = s.RatingCount }).ToList(),
+                        SelectionCount = menuDetails.SelectionCount.HasValue ? menuDetails.SelectionCount : 0,
+                        Selected = menuDetails.Selected
                     });
                 }
 
@@ -78,28 +96,52 @@ namespace Lunch.WebApi.Controllers
             return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
-        // GET: api/UserMenu/5
-        public string Get(int id)
+
+        [HttpPost]
+        [HttpPut]
+        [Route("api/usermenu")]
+        public HttpResponseMessage UpsertUserMenu(UserMenuModel userMenuModel)
         {
-            return "value";
+            try
+            {
+                var menuDateList = userMenuModel.UserMenus.Select(m => m.Date).ToList();
+
+                var loggingUnitOfWork = new LunchUnitOfWork();
+                //{"UserId":"l.s.petrescu","UserMenus":[{"DishId":"49", "DishCategoryId":"1", "Date":"2016-04-18"},{"DishId":"81", "DishCategoryId":"2", "Date":"2016-04-18"}]}
+                //var user = loggingUnitOfWork.UserMenuRepository.g
+
+                var userMenuList = loggingUnitOfWork.UserMenuRepository.GetUserMenuListByDates(menuDateList);
+                foreach (var userMenu in userMenuList)
+                {
+                    loggingUnitOfWork.UserMenuRepository.DeleteEntity(userMenu);
+                }
+
+                foreach (var item in userMenuModel.UserMenus)
+                {
+                    //var userMenu = new UserMenu
+                    //{
+                         
+                    //}
+                }
+
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/usermenu Post/Put: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
-        // POST: api/UserMenu
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT: api/UserMenu/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
 
         // DELETE: api/UserMenu/5
         public void Delete(int id)
         {
         }
 
-        public static byte[] StringToByteArray(string hex)
+        private static byte[] StringToByteArray(string hex)
         {
 
             return Enumerable.Range(0, hex.Length)

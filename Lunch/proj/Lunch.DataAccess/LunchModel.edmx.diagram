@@ -19,10 +19,10 @@
         <AssociationConnector Association="Lunch.DatabaseModel.FK_UserMenu_Menu" ManuallyRouted="false" />
         <AssociationConnector Association="Lunch.DatabaseModel.FK_UserMenu_User" ManuallyRouted="false" />
         <AssociationConnector Association="Lunch.DatabaseModel.UserRole" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="Lunch.DatabaseModel.DishStats" Width="1.5" PointX="3.25" PointY="3.5" />
+        <EntityTypeShape EntityType="Lunch.DatabaseModel.DishStats" Width="1.5" PointX="3" PointY="3.625" />
         <AssociationConnector Association="Lunch.DatabaseModel.FK_DishStatistics_Dish" />
         <AssociationConnector Association="Lunch.DatabaseModel.FK_DishStatistics_User" />
-      </Diagram>
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

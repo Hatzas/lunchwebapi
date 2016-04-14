@@ -66,7 +66,9 @@
     <Compile Include="Extended\DishCategoryDetails.cs" />
     <Compile Include="Extended\DishDetails.cs" />
     <Compile Include="Extended\DishPictureDetails.cs" />
+    <Compile Include="Extended\DishStatsDetails.cs" />
     <Compile Include="Extended\MenuDetails.cs" />
+    <Compile Include="Extended\UserMenuDetails.cs" />
     <Compile Include="LunchModel.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

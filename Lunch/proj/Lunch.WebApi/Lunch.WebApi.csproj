@@ -14,7 +14,7 @@
     <RootNamespace>Lunch.WebApi</RootNamespace>
     <AssemblyName>Lunch.WebApi</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -104,12 +104,17 @@
     <Compile Include="Models\DishesModel.cs" />
     <Compile Include="Models\DishPictureModel.cs" />
     <Compile Include="Models\FormData.cs" />
+    <Compile Include="Models\DishStatsModel.cs" />
     <Compile Include="Models\MenuModel.cs" />
+    <Compile Include="Models\UserDishesModel.cs" />
+    <Compile Include="Models\UserMenuItem.cs" />
+    <Compile Include="Models\UserMenuModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
     <Content Include="log4net.config" />
+    <None Include="Properties\PublishProfiles\Publish.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -145,15 +150,14 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>8434</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:8434/</IISUrl>
+          <IISUrl>http://194.102.98.239/debug</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
-          <CustomServerUrl>
-          </CustomServerUrl>
+          <CustomServerUrl>http://194.102.98.239/</CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>
