@@ -14,25 +14,6 @@ namespace Lunch.WebApi.Controllers
 {
     public class UserMenuController : ApiController
     {
-        //[Route("api/usermenu/list")]
-        //public HttpResponseMessage GetUserMenuList(DateTime startDate, DateTime endDate)
-        //{
-        //    try
-        //    {
-        //        var loggingUnitOfWork = new LunchUnitOfWork();
-        //        var userMenus = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate);
-
-        //        return Request.CreateResponse(userMenus);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Logger.For(this).Error("api/usermenu/menulist Get: ", ex);
-        //    }
-
-        //    return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
-        //}
-
-
         [HttpGet]
         [Route("api/usermenu")]
         public HttpResponseMessage Get(DateTime startDate, DateTime endDate, string user)
@@ -40,17 +21,17 @@ namespace Lunch.WebApi.Controllers
             try
             {
                 var culture = new System.Globalization.CultureInfo("ro-RO");
-                var loggingUnitOfWork = new LunchUnitOfWork();
+                var lunchUnitOfWork = new LunchUnitOfWork();
 
 
                 var userMenusList = new List<MenuDetails>();
                 if (!string.IsNullOrEmpty(user))
                 {
-                    userMenusList = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate, user);
+                    userMenusList = lunchUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval(startDate, endDate, user);
                 }
                 else
                 {
-                    userMenusList = loggingUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval2(startDate, endDate);
+                    userMenusList = lunchUnitOfWork.UserMenuRepository.GetUserMenusDetailsByInterval2(startDate, endDate);
                 }
 
 
@@ -100,30 +81,39 @@ namespace Lunch.WebApi.Controllers
         [HttpPost]
         [HttpPut]
         [Route("api/usermenu")]
-        public HttpResponseMessage UpsertUserMenu(UserMenuModel userMenuModel)
+        public HttpResponseMessage UpsertUserMenu(UserMenuModel model)
         {
             try
             {
-                var menuDateList = userMenuModel.UserMenus.Select(m => m.Date).ToList();
+                var menuDateList = model.UserMenus.Select(m => m.Date).ToList();
 
-                var loggingUnitOfWork = new LunchUnitOfWork();
-                //{"UserId":"l.s.petrescu","UserMenus":[{"DishId":"49", "DishCategoryId":"1", "Date":"2016-04-18"},{"DishId":"81", "DishCategoryId":"2", "Date":"2016-04-18"}]}
-                //var user = loggingUnitOfWork.UserMenuRepository.g
+                var lunchUnitOfWork = new LunchUnitOfWork();
+                
+                var user = lunchUnitOfWork.UserRepository.GetUserByName(model.UserId);
 
-                var userMenuList = loggingUnitOfWork.UserMenuRepository.GetUserMenuListByDates(menuDateList);
+
+                var userMenuList = lunchUnitOfWork.UserMenuRepository.GetUserMenuListByDates(menuDateList);
                 foreach (var userMenu in userMenuList)
                 {
-                    loggingUnitOfWork.UserMenuRepository.DeleteEntity(userMenu);
+                    lunchUnitOfWork.UserMenuRepository.DeleteEntity(userMenu);
                 }
 
-                foreach (var item in userMenuModel.UserMenus)
+
+                foreach (var item in model.UserMenus)
                 {
-                    //var userMenu = new UserMenu
-                    //{
-                         
-                    //}
+                    var menu = lunchUnitOfWork.MenuRepository.GetMenuByDateAndDish(item.Date, item.DishId);
+
+                    var userMenu = new UserMenu
+                    {
+                        Date = item.Date,
+                        MenuId = menu.DishId,
+                        UserId = user.Id,
+                    };
+                    lunchUnitOfWork.UserMenuRepository.Upsert(userMenu);
                 }
 
+                
+                lunchUnitOfWork.Save();
 
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
@@ -136,11 +126,37 @@ namespace Lunch.WebApi.Controllers
         }
 
 
-        // DELETE: api/UserMenu/5
-        public void Delete(int id)
+        [HttpDelete]
+        [Route("api/usermenu")]
+        public HttpResponseMessage Delete(DeleteUserMenuModel model)
         {
+            try
+            {
+                var lunchUnitOfWork = new LunchUnitOfWork();
+
+                var user = lunchUnitOfWork.UserRepository.GetUserByName(model.UserId);
+                var userMenuList = lunchUnitOfWork.UserMenuRepository.GetUserMenusByInterval(model.StartDate, model.EndDate, user.Id);
+
+                foreach (var userMenu in userMenuList)
+                {
+                    lunchUnitOfWork.UserMenuRepository.DeleteEntity(userMenu);
+                }
+
+
+                lunchUnitOfWork.Save();
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/usermenu Delete: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
+
+        #region Private
         private static byte[] StringToByteArray(string hex)
         {
 
@@ -149,5 +165,6 @@ namespace Lunch.WebApi.Controllers
                              .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
                              .ToArray();
         }
+        #endregion
     }
 }

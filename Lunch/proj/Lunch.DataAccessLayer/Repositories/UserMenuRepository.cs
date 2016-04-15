@@ -113,5 +113,14 @@ namespace Lunch.DataAccessLayer.Repositories
             return query.ToList();
         }
         #endregion
+
+        #region Private
+        public List<UserMenu> GetUserMenusByInterval(DateTime startDateTime, DateTime endDateTime, int userId)
+        {
+            var query = DbContext.Set<UserMenu>().Where(m => m.Date.Value >= startDateTime && m.Date.Value <= endDateTime && m.UserId == userId);
+
+            return query.ToList();
+        }
+        #endregion
     }
 }

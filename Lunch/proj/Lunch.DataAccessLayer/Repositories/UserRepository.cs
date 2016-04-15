@@ -30,6 +30,11 @@ namespace Lunch.DataAccessLayer.Repositories
                 this.UpdateEntity(entity);
             }
         }
+
+        public User GetUserByName(string userName)
+        {
+            return DbContext.Set<User>().FirstOrDefault(u => u.Name == userName);
+        }
         #endregion
     }
 }

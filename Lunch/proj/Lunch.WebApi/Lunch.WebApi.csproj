@@ -100,9 +100,11 @@
     <Compile Include="Helpers\Models\TemporaryFolder.cs" />
     <Compile Include="Models\AddMenuModeltem.cs" />
     <Compile Include="Models\DeleteMenuModel.cs" />
+    <Compile Include="Models\DeleteUserMenuModel.cs" />
     <Compile Include="Models\DishCategoryModel.cs" />
     <Compile Include="Models\DishesModel.cs" />
     <Compile Include="Models\DishPictureModel.cs" />
+    <Compile Include="Models\DishRatingModel.cs" />
     <Compile Include="Models\FormData.cs" />
     <Compile Include="Models\DishStatsModel.cs" />
     <Compile Include="Models\MenuModel.cs" />

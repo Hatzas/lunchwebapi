@@ -80,6 +80,11 @@ namespace Lunch.DataAccessLayer.Repositories
         {
             return DbContext.Set<Menu>().Where(m => dateList.Contains(m.Date.Value)).ToList();
         }
+
+        public Menu GetMenuByDateAndDish(DateTime dateTime, int dishId)
+        {
+            return DbContext.Set<Menu>().FirstOrDefault(m => m.Date == dateTime && m.DishId == dishId);
+        }
         #endregion
 
         #region Private methods

@@ -308,6 +308,48 @@ namespace Lunch.WebApi.Controllers
             return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
 
+        [HttpPost]
+        [Route("api/dish/rating")]
+        public HttpResponseMessage DishRating(DishRatingModel model)
+        {
+            try
+            {
+                var lunchUnitOfWork = new LunchUnitOfWork();
+
+                var user = lunchUnitOfWork.UserRepository.GetUserByName(model.UserId);
+                var dish = lunchUnitOfWork.DishRepository.Find(model.DishId);
+                var userDishStats = lunchUnitOfWork.DishStatisticsRepository.GetDishStatistic(model.DishId, user.Id);
+
+
+                if (userDishStats == null)
+                {
+                    userDishStats = new DishStats
+                    {
+                        Rating = model.Rating,
+                        UserId = user.Id,
+                        DishId = dish.Id
+                    };
+                }
+                else
+                {
+                    userDishStats.Rating = model.Rating;
+                }
+
+
+                lunchUnitOfWork.DishStatisticsRepository.Upsert(userDishStats);
+                lunchUnitOfWork.Save();
+
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                Logger.For(this).Error("api/dish/rating Post: ", ex);
+            }
+
+            return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Internal Server Error");
+        }
+
         public static byte[] StringToByteArray(string hex)
         {
 
