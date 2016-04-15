@@ -199,57 +199,27 @@ namespace Lunch.WebApi.Controllers
 
 
                 //Validate resource file upload
-                var fileUploadError = string.Empty;
                 MultipartFileData file = ControllerHelper.ValidateFileUpload(provider.FileData);
 
                 var fileInfo = new FileInfo(file.LocalFileName);
-                var fileName = ControllerHelper.GetFileNameFromHeader(file.Headers.ContentDisposition);
-
-                //---------------
-
 
                 //Convert image to thumbnail
-                string base64String;
-                
-                //var picture = StringToImage(model.DishPicture.Thumbnail);
-                var picture = Image.FromFile(fileInfo.FullName);
-               // var picture2 = Image.FromStream(file);
-
                 byte[] thumbNew;
-                //---------------------------------------
-                using (var srcImage = Image.FromFile(fileInfo.FullName))
-                using (var newImage = new Bitmap(100, 100))
+                var srcImage = Image.FromFile(fileInfo.FullName);
+
+                //using (var srcImage = Image.FromFile(fileInfo.FullName))
+                using (var newImage = srcImage.GetThumbnailImage(320, 230, () => false, IntPtr.Zero))
+                //using (var newImage = new Bitmap(320, 230))
                 using (var graphics = Graphics.FromImage(newImage))
                 using (var stream = new MemoryStream())
                 {
                     graphics.SmoothingMode = SmoothingMode.AntiAlias;
                     graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
                     graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                    graphics.DrawImage(srcImage, new Rectangle(0, 0, 320, 230));
+                    //graphics.DrawImage(srcImage, new Rectangle(0, 0, 320, 230));
                     newImage.Save(stream, ImageFormat.Png);
-                    
-                   // var thumbNew = File(stream.ToArray(), "image/png");
                     thumbNew = stream.ToArray();
-
-                    //artwork.ArtworkThumbnail = thumbNew.FileContents;
                 }    
-
-                //---------------------------------------
-                
-                //Image thumbnail = picture.GetThumbnailImage(320, 230, () => false, IntPtr.Zero);
-                //using (Image image = thumbnail)
-                //{
-                //    using (MemoryStream m = new MemoryStream())
-                //    {
-                //        image.Save(m, ImageFormat.Bmp);
-                //        byte[] imageBytes = m.ToArray();
-
-                //        // Convert byte[] to Base64 String
-                //        base64String = Convert.ToBase64String(imageBytes);
-                //    }
-                //}
-
-                //-------------
 
                 var lunchUnitOfWork = new LunchUnitOfWork();
                 int dishIdValue;
@@ -259,8 +229,6 @@ namespace Lunch.WebApi.Controllers
                     if (dish != null)
                     {
                         var dishPicture = new DishPicture();
-                        //dishPicture.Id = model.DishPicture.Id;
-                        //dishPicture.Thumbnail = StringToByteArray(base64String);
                         dishPicture.Thumbnail = thumbNew;
 
                         lunchUnitOfWork.DishPictureRepository.Upsert(dishPicture);
